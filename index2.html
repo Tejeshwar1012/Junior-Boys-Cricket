@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Player Stats Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Cricket Player Stats</h1>
+
+        <label for="adminPass">Enter Admin Password:</label>
+        <input type="password" id="adminPass" placeholder="Enter Password">
+        <button onclick="checkPassword()">Login</button>
+
+        <hr>
+
+        <label for="playerSelect">Select Player:</label>
+        <select id="playerSelect" onchange="loadPlayerStats()">
+            <option value="">-- Select a Player --</option>
+        </select>
+
+        <label for="playerName">Player Name:</label>
+        <input type="text" id="playerName" placeholder="Enter Player Name" disabled>
+
+        <label for="matches">Matches Played:</label>
+        <input type="number" id="matches" placeholder="Total Matches" min="0" disabled>
+
+        <label for="runs">Runs Scored:</label>
+        <input type="number" id="runs" placeholder="Total Runs" min="0" disabled>
+        <label for="wickets">Wickets Taken:</label>
+        <input type="number" id="wickets" placeholder="Total Wickets" min="0" disabled>
+
+        <button id="saveButton" onclick="saveStats()" disabled>Save Stats</button>
+        <button id="addButton" onclick="addNewPlayer()" disabled>Add New Player</button>
+        <button id="resetButton" onclick="resetData()" class="reset-btn" disabled>Reset Data</button>
+        
+        <h2>Player Overview</h2>
+        <div class="stats">
+            <p><strong>Name:</strong> <span id="displayName">-</span></p>
+            <p><strong>Matches:</strong> <span id="displayMatches">0</span></p>
+            <p><strong>Runs:</strong> <span id="displayRuns">0</span></p>
+            <p><strong>Wickets:</strong> <span id="displayWickets">0</span></p>
+         </div>
+         <h2>Performance Graph</h2>
+        <canvas id="statsChart"></canvas>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
