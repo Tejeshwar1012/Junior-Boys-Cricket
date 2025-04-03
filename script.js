@@ -1,145 +1,143 @@
-let players = JSON.parse(localStorage.getItem("players")) ?? [];
-let selectedPlayer = "";
-const adminPassword = "Tejadiya@711"; // Change this to your password
+// Supabase Configuration
+const SUPABASE_URL = "https://your-supabase-url.supabase.co";
+const SUPABASE_KEY = "your-supabase-secret-key";  // Store this securely in the backend
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Disable inputs until login
-function disableEditing(status) {
-    document.getElementById("playerName").disabled = status;
-    document.getElementById("matches").disabled = status;
-    document.getElementById("runs").disabled = status;
-    document.getElementById("wickets").disabled = status;
-    document.getElementById("saveButton").disabled = status;
-    document.getElementById("addButton").disabled = status;
-    document.getElementById("resetButton").disabled = status;
-}
+// DOM Elements
+const playerSelect = document.getElementById("playerSelect");
+const playerNameInput = document.getElementById("playerName");
+const matchesInput = document.getElementById("matches");
+const runsInput = document.getElementById("runs");
+const wicketsInput = document.getElementById("wickets");
+const playerAvatar = document.getElementById("playerAvatar");
+const statsForm = document.getElementById("statsForm");
+const resetButton = document.getElementById("resetStats");
+const darkModeToggle = document.getElementById("darkModeToggle");
+const chartCanvas = document.getElementById("playerChart");
 
-// Check Admin Password
-function checkPassword() {
-    let enteredPass = document.getElementById("adminPass").value;
-    if (enteredPass === adminPassword) {
-        alert("Access Granted! You can now edit stats.");
-        disableEditing(false);
-    } else {
-        alert("Access Denied! Incorrect password.");
-        disableEditing(true);
+// Admin Password (Hidden from Inspect Element)
+const ADMIN_PASSWORD_HASH = "5d41402abc4b2a76b9719d911017c592"; // MD5 Hash for "hello"
+
+// Global Variables
+let players = [];
+let chart;
+
+// Fetch Players from Supabase
+async function fetchPlayers() {
+    const { data, error } = await supabase.from("players").select("*");
+    if (error) {
+        console.error("Error fetching players:", error);
+        return;
     }
+    players = data;
+    updatePlayerDropdown();
 }
 
-// Load players into dropdown
+// Update Player Dropdown
 function updatePlayerDropdown() {
-    let select = document.getElementById("playerSelect");
-    select.innerHTML = `<option value="">-- Select a Player --</option>`;
-
+    playerSelect.innerHTML = "";
     players.forEach(player => {
-        let option = document.createElement("option");
-        option.value = player.name;
+        const option = document.createElement("option");
+        option.value = player.id;
         option.textContent = player.name;
-        select.appendChild(option);
+        playerSelect.appendChild(option);
     });
-
-    if (selectedPlayer) {
-        select.value = selectedPlayer;
-        loadPlayerStats();
-    }
 }
 
-// Save player stats
-function saveStats() {
-    let name = document.getElementById("playerName").value.trim();
-    let matches = parseInt(document.getElementById("matches").value);
-    let runs = parseInt(document.getElementById("runs").value);
-    let wickets = parseInt(document.getElementById("wickets").value);
-
-    if (!name || isNaN(matches) || isNaN(runs) || isNaN(wickets)) {
-        alert("Please enter valid values.");
+// Load Selected Player's Stats
+async function loadPlayerStats(playerId) {
+    const { data, error } = await supabase.from("players").select("*").eq("id", playerId).single();
+    if (error) {
+        console.error("Error loading player stats:", error);
         return;
     }
 
-    let player = players.find(p => p.name.toLowerCase() === name.toLowerCase());
-    if (player) {
-        player.matches = matches;
-        player.runs = runs;
-        player.wickets = wickets;
-    } else {
-        players.push({ name, matches, runs, wickets });
+    playerNameInput.value = data.name;
+    matchesInput.value = data.matches;
+    runsInput.value = data.runs;
+    wicketsInput.value = data.wickets;
+    playerAvatar.src = data.avatar_url || "default-avatar.png";
+    
+    updateChart(data);
+}
+
+// Update Player Stats in Supabase
+async function updateStats(event) {
+    event.preventDefault();
+    
+    const password = prompt("Enter Admin Password:");
+    if (md5(password) !== ADMIN_PASSWORD_HASH) {
+        alert("Incorrect Password!");
+        return;
     }
 
-    localStorage.setItem("players", JSON.stringify(players));
-    selectedPlayer = name;
-    updatePlayerDropdown();
-    loadPlayerStats();
-}
+    const playerId = playerSelect.value;
+    const updatedStats = {
+        name: playerNameInput.value,
+        matches: parseInt(matchesInput.value),
+        runs: parseInt(runsInput.value),
+        wickets: parseInt(wicketsInput.value)
+    };
 
-// Load selected player's stats
-function loadPlayerStats() {
-    let name = document.getElementById("playerSelect").value;
-    let player = players.find(p => p.name === name);
-
-    if (player) {
-        document.getElementById("playerName").value = player.name;
-        document.getElementById("matches").value = player.matches;
-        document.getElementById("runs").value = player.runs;
-        document.getElementById("wickets").value = player.wickets;
-
-        document.getElementById("displayName").innerText = player.name;
-        document.getElementById("displayMatches").innerText = player.matches;
-        document.getElementById("displayRuns").innerText = player.runs;
-        document.getElementById("displayWickets").innerText = player.wickets;
-
-        selectedPlayer = name;
-        updateGraph(player);
+    const { error } = await supabase.from("players").update(updatedStats).eq("id", playerId);
+    if (error) {
+        console.error("Error updating stats:", error);
+        return;
     }
+
+    alert("Stats updated successfully!");
+    fetchPlayers();
 }
 
-// Add new player
-function addNewPlayer() {
-    document.getElementById("playerName").value = "";
-    document.getElementById("matches").value = "";
-    document.getElementById("runs").value = "";
-    document.getElementById("wickets").value = "";
-}
-
-// Reset all data
-function resetData() {
-    if (confirm("Are you sure you want to reset all player data?")) {
-        localStorage.removeItem("players");
-        players = [];
-        selectedPlayer = "";
-        document.getElementById("playerSelect").innerHTML = "";
-        updatePlayerDropdown();
-        document.getElementById("displayName").innerText = "-";
-        document.getElementById("displayMatches").innerText = "0";
-        document.getElementById("displayRuns").innerText = "0";
-        document.getElementById("displayWickets").innerText = "0";
-        if (chart) chart.destroy();
+// Reset Player Stats
+async function resetStats() {
+    const password = prompt("Enter Admin Password:");
+    if (md5(password) !== ADMIN_PASSWORD_HASH) {
+        alert("Incorrect Password!");
+        return;
     }
-}
 
-// Graph for Runs & Wickets
-let chart;
-function updateGraph(player) {
-    let ctx = document.getElementById("statsChart").getContext("2d");
-
-    if (!chart) {
-        chart = new Chart(ctx, {
-            type: "bar",
-            data: {
-                labels: ["Runs", "Wickets"],
-                datasets: [{
-                    label: player.name + " Performance",
-                    data: [player.runs, player.wickets],
-                    backgroundColor: ["blue", "red"]
-                }]
-            }
-        });
-    } else {
-        chart.data.datasets[0].label = player.name + " Performance";
-        chart.data.datasets[0].data = [player.runs, player.wickets];
-        chart.update();
+    const playerId = playerSelect.value;
+    const resetData = { matches: 0, runs: 0, wickets: 0 };
+    
+    const { error } = await supabase.from("players").update(resetData).eq("id", playerId);
+    if (error) {
+        console.error("Error resetting stats:", error);
+        return;
     }
+
+    alert("Stats reset!");
+    loadPlayerStats(playerId);
 }
 
-// Disable editing by default until login
-disableEditing(true);
-window.onload = updatePlayerDropdown;
+// Toggle Dark Mode
+darkModeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+});
 
+// Update Chart with New Data
+function updateChart(data) {
+    if (chart) {
+        chart.destroy();
+    }
+    
+    chart = new Chart(chartCanvas, {
+        type: "bar",
+        data: {
+            labels: ["Matches", "Runs", "Wickets"],
+            datasets: [{
+                label: `${data.name}'s Performance`,
+                data: [data.matches, data.runs, data.wickets],
+                backgroundColor: ["#ffcc00", "#ff5733", "#007BFF"]
+            }]
+        }
+    });
+}
+
+// Event Listeners
+playerSelect.addEventListener("change", () => loadPlayerStats(playerSelect.value));
+statsForm.addEventListener("submit", updateStats);
+resetButton.addEventListener("click", resetStats);
+
+// Fetch Initial Data
+fetchPlayers();
