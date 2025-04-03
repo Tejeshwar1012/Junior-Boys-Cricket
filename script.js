@@ -1,39 +1,23 @@
-// Supabase Configuration
 const SUPABASE_URL = "https://your-supabase-url.supabase.co";
-const SUPABASE_KEY = "your-supabase-secret-key";  // Store this securely in the backend
+const SUPABASE_KEY = "your-supabase-secret-key";
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// DOM Elements
 const playerSelect = document.getElementById("playerSelect");
-const playerNameInput = document.getElementById("playerName");
-const matchesInput = document.getElementById("matches");
-const runsInput = document.getElementById("runs");
-const wicketsInput = document.getElementById("wickets");
-const playerAvatar = document.getElementById("playerAvatar");
 const statsForm = document.getElementById("statsForm");
-const resetButton = document.getElementById("resetStats");
 const darkModeToggle = document.getElementById("darkModeToggle");
 const chartCanvas = document.getElementById("playerChart");
+const ADMIN_PASSWORD_HASH = "5d41402abc4b2a76b9719d911017c592";
 
-// Admin Password (Hidden from Inspect Element)
-const ADMIN_PASSWORD_HASH = "5d41402abc4b2a76b9719d911017c592"; // MD5 Hash for "hello"
-
-// Global Variables
 let players = [];
 let chart;
 
-// Fetch Players from Supabase
 async function fetchPlayers() {
     const { data, error } = await supabase.from("players").select("*");
-    if (error) {
-        console.error("Error fetching players:", error);
-        return;
-    }
+    if (error) return console.error("Error fetching players:", error);
     players = data;
     updatePlayerDropdown();
 }
 
-// Update Player Dropdown
 function updatePlayerDropdown() {
     playerSelect.innerHTML = "";
     players.forEach(player => {
@@ -44,83 +28,26 @@ function updatePlayerDropdown() {
     });
 }
 
-// Load Selected Player's Stats
-async function loadPlayerStats(playerId) {
-    const { data, error } = await supabase.from("players").select("*").eq("id", playerId).single();
-    if (error) {
-        console.error("Error loading player stats:", error);
-        return;
-    }
-
-    playerNameInput.value = data.name;
-    matchesInput.value = data.matches;
-    runsInput.value = data.runs;
-    wicketsInput.value = data.wickets;
-    playerAvatar.src = data.avatar_url || "default-avatar.png";
-    
-    updateChart(data);
-}
-
-// Update Player Stats in Supabase
 async function updateStats(event) {
     event.preventDefault();
-    
     const password = prompt("Enter Admin Password:");
-    if (md5(password) !== ADMIN_PASSWORD_HASH) {
-        alert("Incorrect Password!");
-        return;
-    }
+    if (md5(password) !== ADMIN_PASSWORD_HASH) return alert("Incorrect Password!");
 
     const playerId = playerSelect.value;
     const updatedStats = {
-        name: playerNameInput.value,
-        matches: parseInt(matchesInput.value),
-        runs: parseInt(runsInput.value),
-        wickets: parseInt(wicketsInput.value)
+        matches: parseInt(document.getElementById("matches").value),
+        runs: parseInt(document.getElementById("runs").value),
+        wickets: parseInt(document.getElementById("wickets").value)
     };
 
     const { error } = await supabase.from("players").update(updatedStats).eq("id", playerId);
-    if (error) {
-        console.error("Error updating stats:", error);
-        return;
-    }
-
+    if (error) return console.error("Error updating stats:", error);
     alert("Stats updated successfully!");
     fetchPlayers();
 }
 
-// Reset Player Stats
-async function resetStats() {
-    const password = prompt("Enter Admin Password:");
-    if (md5(password) !== ADMIN_PASSWORD_HASH) {
-        alert("Incorrect Password!");
-        return;
-    }
-
-    const playerId = playerSelect.value;
-    const resetData = { matches: 0, runs: 0, wickets: 0 };
-    
-    const { error } = await supabase.from("players").update(resetData).eq("id", playerId);
-    if (error) {
-        console.error("Error resetting stats:", error);
-        return;
-    }
-
-    alert("Stats reset!");
-    loadPlayerStats(playerId);
-}
-
-// Toggle Dark Mode
-darkModeToggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-});
-
-// Update Chart with New Data
 function updateChart(data) {
-    if (chart) {
-        chart.destroy();
-    }
-    
+    if (chart) chart.destroy();
     chart = new Chart(chartCanvas, {
         type: "bar",
         data: {
@@ -134,10 +61,7 @@ function updateChart(data) {
     });
 }
 
-// Event Listeners
-playerSelect.addEventListener("change", () => loadPlayerStats(playerSelect.value));
-statsForm.addEventListener("submit", updateStats);
-resetButton.addEventListener("click", resetStats);
-
-// Fetch Initial Data
-fetchPlayers();
+darkModeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+});
