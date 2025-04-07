@@ -1,54 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cricket Stats Manager</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/md5.min.js"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@1.35.7"></script>
-</head>
-<body>
-
-    <!-- Dark Mode Toggle -->
-    <button id="darkModeToggle">🌙</button>
-
-    <!-- Main Container -->
-    <div class="container">
-        <h1>🏏 Cricket Stats Manager</h1>
-
-        <!-- Player Selection -->
-        <label for="playerSelect">Select Player:</label>
-        <select id="playerSelect"></select>
-
-        <!-- Player Stats Form -->
-        <form id="statsForm">
-            <label for="playerName">Player Name:</label>
-            <input type="text" id="playerName" disabled>
-
-            <label for="matches">Matches Played:</label>
-            <input type="number" id="matches" min="0">
-
-            <label for="runs">Runs Scored:</label>
-            <input type="number" id="runs" min="0">
-
-            <label for="wickets">Wickets Taken:</label>
-            <input type="number" id="wickets" min="0">
-
-            <!-- Avatar Display -->
-            <div class="avatar-container">
-                <img id="playerAvatar" src="default-avatar.png" alt="Player Avatar">
-            </div>
-
-            <button type="submit">Update Stats</button>
-            <button type="button" id="resetStats" class="reset-btn">Reset Stats</button>
-        </form>
-
-        <!-- Link to Graph Page -->
-        <a href="graph.html" class="link-button">📊 View Graphs</a>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+<!DOCTYPE html><html lang="en"><head>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Junior Boys Cricket</title>    <link rel="stylesheet" href="styles.css">    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/md5.min.js"></script>    <script src="https://unpkg.com/@supabase/supabase-js@1.35.7"></script></head><body>
+    <!-- Dark Mode Toggle -->    <button id="darkModeToggle"> </button>
+    <!-- Main Container -->    <div class="container">        <h1>Junor Boys Cricket</h1>
+        <!-- Player Selection -->        <label for="playerSelect">Select Player:</label>        <select id="playerSelect"></select>
+        <!-- Player Stats Form -->        <form id="statsForm">            <label for="playerName">Player Name:</label>            <input type="text" id="playerName" disabled>
+            <label for="matches">Matches Played:</label>            <input type="number" id="matches" min="0">
+            <label for="runs">Runs Scored:</label>            <input type="number" id="runs" min="0">
+            <label for="wickets">Wickets Taken:</label>            <input type="number" id="wickets" min="0">
+            <!-- Avatar Display -->            <div class="avatar-container">                <img id="playerAvatar" src="default-avatar.png" alt="Player Avatar">            </div>
+            <button type="submit">Update Stats</button>            <button type="button" id="resetStats" class="reset-btn">Reset Stats</button>        </form>
+        <!-- Link to Graph Page -->        <a href="graph.html" class="link-button">VIEW GRAPH</a>    </div>
+    <script src="script.js"></script></body></html>
