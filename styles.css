@@ -125,3 +125,21 @@ form button:hover {
   margin: 10px;
   width:  300px
 }
+#pagetitle {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 2.5rem;
+  color: #00ffe7;
+  text-shadow: 0 0 10px #00ffe7;
+}
+#pagetitle {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+@keyframes glow {
+  from { 
+  text-shadow: 0 0 10px #00ffe7, 0 0 20px #00ffe7;
+  }
+  to {
+    text-shadow: 0 0 20px #00ffe7, 0 0 40px #00ffe7;
+  }
+}
