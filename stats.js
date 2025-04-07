@@ -1,68 +1,69 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-// Your Supabase credentials
-const supabaseUrl = 'https://ojahcuzryaeladpmrbyb.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qYWhjdXpyeWFlbGFkcG1yYnliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2MDM4ODQsImV4cCI6MjA1OTE3OTg4NH0.EJ8P2NW6YTiYHhnkIbdnBgQZ_kOqdkvOjl21MLIAyVY';
+// Supabase Configuration
+const supabaseUrl = 'https://your-project.supabase.co';  // Replace with your URL
+const supabaseKey = 'your-anon-key';                     // Replace with your key
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Dark Mode toggle
-const darkModeToggle = document.getElementById('darkModeToggle');
-darkModeToggle.addEventListener('change', () => {
-  document.body.classList.toggle('dark-mode');
+// Admin Password (hidden from HTML)
+const ADMIN_PASSWORD = 'your_secure_admin_password';     // Change securely
+
+// DOM References
+const form = document.getElementById('playerForm');
+const playerSelect = document.getElementById('playerSelect');
+
+// Load Players on Page Load
+window.addEventListener('DOMContentLoaded', async () => {
+  await populatePlayerDropdown();
 });
 
-// Fetch and render player stats charts
-window.addEventListener('DOMContentLoaded', async () => {
-  const { data, error } = await supabase.from('players').select('*');
-
+// Populate Select Dropdown
+async function populatePlayerDropdown() {
+  const { data, error } = await supabase.from('players').select('name');
   if (error) {
-    console.error('Error fetching stats:', error);
+    console.error('Error loading players:', error);
     return;
   }
 
-  const playerNames = data.map(p => p.name);
-  const playerRuns = data.map(p => p.runs);
-  const playerWickets = data.map(p => p.wickets);
-
-  // Runs Chart
-  const runsCtx = document.getElementById('runsChart').getContext('2d');
-  new Chart(runsCtx, {
-    type: 'bar',
-    data: {
-      labels: playerNames,
-      datasets: [{
-        label: 'Runs Scored',
-        data: playerRuns,
-        backgroundColor: 'rgba(0, 255, 231, 0.5)',
-        borderColor: '#00ffe7',
-        borderWidth: 2
-      }]
-    },
-    options: {
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
+  playerSelect.innerHTML = '';
+  data.forEach(player => {
+    const option = document.createElement('option');
+    option.value = player.name;
+    option.textContent = player.name;
+    playerSelect.appendChild(option);
   });
+}
 
-  // Wickets Chart
-  const wicketsCtx = document.getElementById('wicketsChart').getContext('2d');
-  new Chart(wicketsCtx, {
-    type: 'bar',
-    data: {
-      labels: playerNames,
-      datasets: [{
-        label: 'Wickets Taken',
-        data: playerWickets,
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 2
-      }]
-    },
-    options: {
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
-  });
+// Handle Form Submission
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById('name').value.trim();
+  const matches = parseInt(document.getElementById('matches').value);
+  const runs = parseInt(document.getElementById('runs').value);
+  const wickets = parseInt(document.getElementById('wickets').value);
+  const adminPass = document.getElementById('adminPass').value.trim();
+
+  if (adminPass !== ADMIN_PASSWORD) {
+    alert('Incorrect admin password.');
+    return;
+  }
+
+  if (!name || isNaN(matches) || isNaN(runs) || isNaN(wickets)) {
+    alert('Please fill all fields correctly.');
+    return;
+  }
+
+  const { error } = await supabase
+    .from('players')
+    .upsert({ name, matches, runs, wickets }, { onConflict: ['name'] });
+
+  if (error) {
+    alert('Failed to save player stats.');
+    console.error(error);
+  } else {
+    alert('Stats saved successfully!');
+    form.reset();
+    await populatePlayerDropdown();
+  }
 });
