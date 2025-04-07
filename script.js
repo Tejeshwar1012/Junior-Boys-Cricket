@@ -1,36 +1,39 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-// Your Supabase credentials
-const supabaseUrl = 'https://ojahcuzryaeladpmrbyb.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qYWhjdXpyeWFlbGFkcG1yYnliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2MDM4ODQsImV4cCI6MjA1OTE3OTg4NH0.EJ8P2NW6YTiYHhnkIbdnBgQZ_kOqdkvOjl21MLIAyVY';
+// Supabase Configuration
+const supabaseUrl = 'https://your-project.supabase.co';
+const supabaseKey = 'your-anon-key';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Admin Password (obfuscated, not in HTML)
-const ADMIN_PASSWORD = '10122011';
+// Admin Password (Hidden from HTML)
+const ADMIN_PASSWORD = 'your_secure_admin_password';
 
+// DOM Elements
 const form = document.getElementById('playerForm');
 const playersContainer = document.getElementById('playersContainer');
 const darkModeToggle = document.getElementById('darkModeToggle');
+const playerSelect = document.getElementById('playerSelect');
 
 // Toggle Dark Mode
 darkModeToggle.addEventListener('change', () => {
   document.body.classList.toggle('dark-mode');
 });
 
-// Fetch Players on Load
+// On Page Load
 window.addEventListener('DOMContentLoaded', async () => {
   await loadPlayers();
+  await populatePlayerDropdown();
 });
 
-// Load All Players from Supabase
+// Load Player Cards
 async function loadPlayers() {
   const { data, error } = await supabase.from('players').select('*');
   if (error) {
-    console.error('Error fetching players:', error);
+    console.error('Error loading players:', error);
     return;
   }
 
-  playersContainer.innerHTML = ''; // Clear before reload
+  playersContainer.innerHTML = '';
 
   data.forEach(player => {
     const card = document.createElement('div');
@@ -45,6 +48,24 @@ async function loadPlayers() {
   });
 }
 
+// Populate Player Dropdown
+async function populatePlayerDropdown() {
+  const { data, error } = await supabase.from('players').select('name');
+  if (error) {
+    console.error('Error populating player dropdown:', error);
+    return;
+  }
+
+  playerSelect.innerHTML = ''; // Clear previous options
+
+  data.forEach(player => {
+    const option = document.createElement('option');
+    option.value = player.name;
+    option.textContent = player.name;
+    playerSelect.appendChild(option);
+  });
+}
+
 // Handle Form Submission
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -55,7 +76,7 @@ form.addEventListener('submit', async (e) => {
   const wickets = parseInt(document.getElementById('wickets').value);
   const adminPass = document.getElementById('adminPass').value;
 
-  if (adminPass !== ADMIN_PASSWORD) {
+  if (adminPass.trim() !== ADMIN_PASSWORD) {
     alert('Incorrect admin password.');
     return;
   }
@@ -71,5 +92,6 @@ form.addEventListener('submit', async (e) => {
     alert('Stats saved successfully!');
     form.reset();
     await loadPlayers();
+    await populatePlayerDropdown();
   }
 });
