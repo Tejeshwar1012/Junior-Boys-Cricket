@@ -1,24 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player Performance Graph</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Stats Graphs</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
-    <div class="container">
-        <h1>📊 Player Performance Graph</h1>
-        
-        <!-- Graph Display -->
-        <canvas id="playerChart"></canvas>
-
-        <!-- Back to Home Page -->
-        <a href="index.html" class="link-button">🏡 Back to Home</a>
-    </div>
-
-    <script src="script.js"></script>
+  <div class="parallax-bg"></div>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <h2>Cricket Stats</h2>
+      <nav>
+        <ul>
+          <li><a href="index.html">Dashboard</a></li>
+          <li><a href="stats.html">Stats Graphs</a></li>
+        </ul>
+      </nav>
+      <div class="dark-mode-toggle">
+        <label for="darkModeToggle">Dark Mode</label>
+        <input type="checkbox" id="darkModeToggle">
+      </div>
+    </aside>
+    <main class="main-content">
+      <canvas id="runsChart"></canvas>
+      <canvas id="wicketsChart"></canvas>
+    </main>
+  </div>
+  <script type="module" src="stats.js"></script>
 </body>
 </html>
