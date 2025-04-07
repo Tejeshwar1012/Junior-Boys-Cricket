@@ -1,143 +1,62 @@
-/* Base Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-  color: #fff;
-  min-height: 100vh;
-  overflow-x: hidden;
-  transition: background 0.5s ease;
-}
-
-/* Parallax Background */
-.parallax-bg {
-  background-image: url('https://images.unsplash.com/photo-1600449865110-fe5795d4f9e3?auto=format&fit=crop&w=1920&q=80');
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100vh;
-  background-attachment: fixed;
-  background-size: cover;
-  background-position: center;
-  z-index: -1;
-  filter: brightness(0.3);
-}
-
-/* Dark Mode */
-body.dark-mode {
-  background: #121212;
-  color: #e0e0e0;
-}
-
-/* Dashboard Layout */
-.dashboard {
-  display: flex;
-  min-height: 100vh;
-}
-
-.sidebar {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 20px;
-  width: 250px;
-  backdrop-filter: blur(10px);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.sidebar h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #00ffe7;
-  text-shadow: 0 0 5px #00ffe7;
-}
-
-.sidebar ul {
-  list-style: none;
-}
-
-.sidebar li {
-  margin: 15px 0;
-}
-
-.sidebar a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: bold;
-  transition: color 0.3s;
-}
-
-.sidebar a:hover {
-  color: #00ffe7;
-  text-shadow: 0 0 8px #00ffe7;
-}
-
-.main-content {
-  flex: 1;
-  padding: 40px;
+  font-family: 'Segoe UI', sans-serif;
+  background: #111;
+  color: #f0f0f0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+#pageTitle {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #00ffe7;
+  text-align: center;
+  animation: glow 2s ease-in-out infinite alternate;
 }
 
 form {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 20px;
-  border-radius: 12px;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  animation: fadeIn 0.5s ease;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 15px rgba(0, 255, 231, 0.3);
 }
 
-form input, form button {
-  padding: 10px;
+input, button, select {
+  padding: 0.75rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 5px;
+  font-size: 1rem;
+  width: 100%;
 }
 
-form input {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
-form button {
-  background: #00ffe7;
+button {
+  background-color: #00ffe7;
   color: #000;
-  font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease;
 }
 
-form button:hover {
-  background: #00bfa5;
+button:hover {
+  background-color: #00ccbb;
 }
 
-.player-card {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 20px;
-  margin: 10px;
-  width:  300px
+select {
+  margin-top: 1rem;
+  max-width: 300px;
 }
-#pagetitle {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 2.5rem;
-  color: #00ffe7;
-  text-shadow: 0 0 10px #00ffe7;
-}
-#pagetitle {
-  animation: glow 2s ease-in-out infinite alternate;
-}
+
 @keyframes glow {
-  from { 
-  text-shadow: 0 0 10px #00ffe7, 0 0 20px #00ffe7;
+  from {
+    text-shadow: 0 0 10px #00ffe7, 0 0 20px #00ffe7;
   }
   to {
     text-shadow: 0 0 20px #00ffe7, 0 0 40px #00ffe7;
