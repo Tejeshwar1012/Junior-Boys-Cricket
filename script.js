@@ -1,12 +1,12 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 // Your Supabase credentials
-const supabaseUrl = 'https://your-project.supabase.co';
-const supabaseKey = 'your-anon-key';
+const supabaseUrl = 'https://ojahcuzryaeladpmrbyb.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qYWhjdXpyeWFlbGFkcG1yYnliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2MDM4ODQsImV4cCI6MjA1OTE3OTg4NH0.EJ8P2NW6YTiYHhnkIbdnBgQZ_kOqdkvOjl21MLIAyVY';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Admin Password (obfuscated, not in HTML)
-const ADMIN_PASSWORD = 'your_secure_admin_password';
+const ADMIN_PASSWORD = '10122011';
 
 const form = document.getElementById('playerForm');
 const playersContainer = document.getElementById('playersContainer');
