@@ -1,69 +1,75 @@
-const SUPABASE_URL = "https://ojahcuzryaeladpmrbyb.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qYWhjdXpyeWFlbGFkcG1yYnliIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MzYwMzg4NCwiZXhwIjoyMDU5MTc5ODg0fQ.KAeVpn8O7Luwz1cCiquTWib3urtubFFXIpBehVbUOXE";
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-const playerSelect = document.getElementById("playerSelect");
-const statsForm = document.getElementById("statsForm");
-const darkModeToggle = document.getElementById("darkModeToggle");
-const chartCanvas = document.getElementById("playerChart");
-const ADMIN_PASSWORD_HASH = "5d41402abc4b2a76b9719d911017c592";
+// Your Supabase credentials
+const supabaseUrl = 'https://your-project.supabase.co';
+const supabaseKey = 'your-anon-key';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-let players = [];
-let chart;
+// Admin Password (obfuscated, not in HTML)
+const ADMIN_PASSWORD = 'your_secure_admin_password';
 
-async function fetchPlayers() {
-    const { data, error } = await supabase.from("players").select("*");
-    if (error) return console.error("Error fetching players:", error);
-    players = data;
-    updatePlayerDropdown();
-}
+const form = document.getElementById('playerForm');
+const playersContainer = document.getElementById('playersContainer');
+const darkModeToggle = document.getElementById('darkModeToggle');
 
-function updatePlayerDropdown() {
-    playerSelect.innerHTML = "";
-    players.forEach(player => {
-        const option = document.createElement("option");
-        option.value = player.id;
-        option.textContent = player.name;
-        playerSelect.appendChild(option);
-    });
-}
-
-async function updateStats(event) {
-    event.preventDefault();
-    const password = prompt("Enter Admin Password:");
-    if (md5(password) !== ADMIN_PASSWORD_HASH) return alert("Incorrect Password!");
-
-    const playerId = playerSelect.value;
-    const updatedStats = {
-        matches: parseInt(document.getElementById("matches").value),
-        runs: parseInt(document.getElementById("runs").value),
-        wickets: parseInt(document.getElementById("wickets").value)
-    };
-
-    const { error } = await supabase.from("players").update(updatedStats).eq("id", playerId);
-    if (error) return console.error("Error updating stats:", error);
-    alert("Stats updated successfully!");
-    fetchPlayers();
-}
-
-function updateChart(data) {
-    if (chart) chart.destroy();
-    chart = new Chart(chartCanvas, {
-        type: "bar",
-        data: {
-            labels: ["Matches", "Runs", "Wickets"],
-            datasets: [{
-                label: `${data.name}'s Performance`,
-                data: [data.matches, data.runs, data.wickets],
-                backgroundColor: ["#ffcc00", "#ff5733", "#007BFF"]
-            }]
-        }
-    });
-}
-
-darkModeToggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+// Toggle Dark Mode
+darkModeToggle.addEventListener('change', () => {
+  document.body.classList.toggle('dark-mode');
 });
 
-fetchPlayers();
+// Fetch Players on Load
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadPlayers();
+});
+
+// Load All Players from Supabase
+async function loadPlayers() {
+  const { data, error } = await supabase.from('players').select('*');
+  if (error) {
+    console.error('Error fetching players:', error);
+    return;
+  }
+
+  playersContainer.innerHTML = ''; // Clear before reload
+
+  data.forEach(player => {
+    const card = document.createElement('div');
+    card.className = 'player-card';
+    card.innerHTML = `
+      <h3>${player.name}</h3>
+      <p><strong>Matches:</strong> ${player.matches}</p>
+      <p><strong>Runs:</strong> ${player.runs}</p>
+      <p><strong>Wickets:</strong> ${player.wickets}</p>
+    `;
+    playersContainer.appendChild(card);
+  });
+}
+
+// Handle Form Submission
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById('name').value.trim();
+  const matches = parseInt(document.getElementById('matches').value);
+  const runs = parseInt(document.getElementById('runs').value);
+  const wickets = parseInt(document.getElementById('wickets').value);
+  const adminPass = document.getElementById('adminPass').value;
+
+  if (adminPass !== ADMIN_PASSWORD) {
+    alert('Incorrect admin password.');
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from('players')
+    .upsert({ name, matches, runs, wickets }, { onConflict: ['name'] });
+
+  if (error) {
+    alert('Error saving stats');
+    console.error(error);
+  } else {
+    alert('Stats saved successfully!');
+    form.reset();
+    await loadPlayers();
+  }
+});
