@@ -1,5 +1,5 @@
-const SUPABASE_URL = "https://your-supabase-url.supabase.co";
-const SUPABASE_KEY = "your-supabase-secret-key";
+const SUPABASE_URL = "https://ojahcuzryaeladpmrbyb.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qYWhjdXpyeWFlbGFkcG1yYnliIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MzYwMzg4NCwiZXhwIjoyMDU5MTc5ODg0fQ.KAeVpn8O7Luwz1cCiquTWib3urtubFFXIpBehVbUOXE";
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const playerSelect = document.getElementById("playerSelect");
@@ -65,3 +65,5 @@ darkModeToggle.addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
     localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
 });
+
+fetchPlayers();
